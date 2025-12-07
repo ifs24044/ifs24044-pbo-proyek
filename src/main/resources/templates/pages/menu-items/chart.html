@@ -13,6 +13,7 @@
     <!-- Custom CSS -->
     <th:block layout:fragment="others-css">
       <style>
+        /* Styling Kartu Statistik */
         .stat-card {
           background: white;
           border-radius: 15px;
@@ -39,6 +40,7 @@
           margin: 0;
         }
         
+        /* Styling Kartu Grafik */
         .chart-card {
           background: white;
           border-radius: 15px;
@@ -55,6 +57,28 @@
           padding: 15px 20px;
           margin-bottom: 20px;
         }
+
+        /* --- BUTTON GRADIENT UNGU (BARU) --- */
+        .btn-back-gradient {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white !important; /* Force text white */
+          border: none;
+          border-radius: 25px;
+          padding: 10px 25px;
+          font-weight: 600;
+          box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+          transition: all 0.3s ease;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .btn-back-gradient:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); /* Reverse gradient on hover */
+        }
       </style>
     </th:block>
   </head>
@@ -70,8 +94,10 @@
           </h2>
           <p class="text-muted mb-0">Visualisasi data menu dan analisis penjualan</p>
         </div>
-        <a th:href="@{/}" class="btn btn-secondary" style="border-radius: 25px;">
-          ← Kembali
+        
+        <!-- BUTTON KEMBALI YANG DIUBAH -->
+        <a th:href="@{/}" class="btn btn-back-gradient">
+          <span>←</span> Kembali
         </a>
       </div>
 

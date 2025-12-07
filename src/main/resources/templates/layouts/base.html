@@ -13,7 +13,7 @@
     />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- Icon -->
+    <!-- Icon Browser (Favicon) -->
     <link rel="icon" th:href="@{/assets/images/resto.png}" type="image/x-icon" />
 
     <!-- Judul -->
@@ -67,6 +67,22 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
 
+      /* CSS Logo Wrapper (Agar konsisten dengan desain sebelumnya) */
+      .brand-logo-wrapper {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 5px 10px;
+        margin-right: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease;
+      }
+      .brand-logo-wrapper:hover {
+        transform: scale(1.05);
+      }
+
       .navbar-custom .nav-link,
       .navbar-custom .navbar-brand,
       .navbar-custom .dropdown-toggle {
@@ -85,6 +101,13 @@
       .navbar-custom .dropdown-menu {
         border-radius: 10px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border: none; /* Menghilangkan border default */
+      }
+      
+      /* Style untuk item dropdown saat di hover */
+      .dropdown-item:hover {
+        background-color: #f8f9fa;
+        color: #667eea;
       }
 
       .card {
@@ -183,23 +206,70 @@
   </head>
 
   <body>
-    <!-- Navbar (Optional - hanya jika authenticated) -->
+    <!-- Navbar -->
     <nav class="navbar navbar-custom navbar-expand-lg navbar-dark" th:if="${auth != null}">
       <div class="container-fluid">
+        
+        <!-- BAGIAN LOGO -->
         <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
-          <span style="font-size: 1.5rem; margin-right: 10px;">🍽️</span>
+          <!-- Wrapper Putih untuk Logo -->
+          <div class="brand-logo-wrapper">
+            <img th:src="@{/assets/images/logoo.png}" 
+                 alt="Logo" 
+                 style="height: 35px; width: auto;" />
+          </div>
+               
           <span style="font-weight: bold; color: #ffffff;">Ananta-Resto Menu</span>
         </a>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" th:href="@{/}">
+            
+            <!-- ✅ DROPDOWN DAFTAR MENU -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button" 
+                 data-bs-toggle="dropdown" aria-expanded="false">
                 📋 Daftar Menu
               </a>
+              <ul class="dropdown-menu" aria-labelledby="menuDropdown">
+                
+                <!-- OPSI UNTUK MENAMPILKAN SEMUA DATA -->
+                <li>
+                    <a class="dropdown-item fw-bold" th:href="@{/}">
+                        🍽️ Tampilkan Semua
+                    </a>
+                </li>
+                
+                <li><hr class="dropdown-divider"></li>
+                
+                <!-- OPSI FILTER KATEGORI -->
+                <li>
+                    <a class="dropdown-item" th:href="@{/(category='Appetizer')}">
+                        🥗 Appetizer
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/(category='Main Course')}">
+                        🍛 Main Course
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/(category='Dessert')}">
+                        🍰 Dessert
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" th:href="@{/(category='Beverage')}">
+                        🥤 Beverage
+                    </a>
+                </li>
+              </ul>
             </li>
+            <!-- ✅ AKHIR MODIFIKASI -->
+
             <li class="nav-item">
               <a class="nav-link" th:href="@{/menu-items/chart}">
                 📊 Statistik

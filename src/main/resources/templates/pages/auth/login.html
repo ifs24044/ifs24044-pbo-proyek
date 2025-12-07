@@ -5,116 +5,364 @@
   layout:decorate="~{layouts/base}"
 >
   <head>
-    <title>Masuk - Spring Boot Todolist</title>
+    <title>Masuk - Ananta-Resto</title>
+    
+    <th:block layout:fragment="others-css">
+      <style>
+        /* 1. Global & Background (Clean White Style) */
+        body {
+          /* Fallback color */
+          background-color: #f1f5f9;
+          
+          /* Latar Belakang: Overlay Putih Transparan + Gambar Restoran */
+          background: 
+            /* Gradient Putih (Kiri atas lebih pekat -> Kanan bawah lebih transparan) */
+            linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.5) 100%),
+            /* Gambar Background (Restaurant Interior - Beda dengan Register) */
+            url('/assets/images/restoranpoto.avif');
+          
+          /* Pengaturan Posisi Background */
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          margin: 0;
+        }
+
+        /* 2. Login Container (Ukuran Tetap 400px) */
+        .login-container {
+          width: 400px; 
+          margin: 1rem;
+          position: relative;
+          z-index: 2;
+        }
+
+        .login-card {
+          background: #ffffff; /* Putih solid */
+          border-radius: 16px;
+          /* Shadow lebih soft */
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); 
+          overflow: hidden;
+        }
+
+        /* 3. Header Section */
+        .login-header {
+          /* Header tetap Ungu agar branding tetap kuat & logo terlihat jelas */
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          padding: 2.5rem 2rem 2rem 2rem;
+          text-align: center;
+          color: white;
+        }
+
+        .logo-wrapper {
+          width: 80px;
+          height: 80px;
+          margin: 0 auto 1rem auto;
+          background: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo-wrapper img {
+          width: 50px;
+          height: 50px;
+          object-fit: contain;
+        }
+
+        .login-title {
+          margin: 0 0 0.5rem;
+          font-weight: 700;
+          font-size: 1.5rem;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .login-subtitle {
+          margin: 0;
+          opacity: 0.95;
+          font-size: 0.9rem;
+          font-weight: 400;
+        }
+
+        /* 4. Body Section */
+        .login-body {
+          padding: 2rem;
+        }
+
+        .input-wrapper {
+          position: relative;
+          margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: #475569;
+          margin-bottom: 0.5rem;
+          display: block;
+          text-align: left;
+        }
+
+        /* Styling Input Field */
+        .form-control {
+          width: 100%;
+          height: 48px;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 0 15px 0 45px;
+          font-size: 0.95rem;
+          transition: all 0.2s ease;
+          box-sizing: border-box;
+          background-color: #f8fafc;
+        }
+
+        .form-control:focus {
+          background-color: #fff;
+          border-color: #667eea;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .form-control.is-invalid {
+          border-color: #ef4444;
+          background-color: #fff;
+        }
+
+        /* Ikon Input */
+        .input-icon {
+          position: absolute;
+          left: 15px;
+          top: 38px; 
+          font-size: 1.1rem;
+          color: #94a3b8;
+          pointer-events: none;
+          z-index: 5;
+        }
+
+        /* Tombol Intip Password */
+        .password-toggle {
+          position: absolute;
+          right: 15px;
+          top: 38px;
+          cursor: pointer;
+          color: #94a3b8;
+          border: none;
+          background: none;
+          padding: 0;
+          font-size: 1rem;
+          transition: color 0.2s;
+        }
+        
+        .password-toggle:hover {
+          color: #667eea;
+        }
+
+        /* Checkbox Area */
+        .form-check {
+          display: flex;
+          align-items: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .form-check-input {
+          width: 1.1rem;
+          height: 1.1rem;
+          margin-right: 0.6rem;
+          cursor: pointer;
+          accent-color: #667eea;
+          border: 2px solid #cbd5e1;
+        }
+
+        .form-check-label {
+          color: #64748b;
+          font-size: 0.9rem;
+          cursor: pointer;
+          user-select: none;
+        }
+
+        /* Button Login */
+        .btn-login {
+          width: 100%;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          padding: 12px;
+          font-size: 1rem;
+          font-weight: 700;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 6px rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-login:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 7px 14px rgba(102, 126, 234, 0.35);
+        }
+
+        .btn-login:active {
+          transform: translateY(0);
+        }
+
+        /* Footer */
+        .login-footer {
+          text-align: center;
+          padding: 1.5rem;
+          background: #f8fafc;
+          border-top: 1px solid #e2e8f0;
+          font-size: 0.85rem;
+          color: #64748b;
+        }
+
+        .login-footer a {
+          color: #667eea;
+          text-decoration: none;
+          font-weight: 600;
+        }
+        
+        .login-footer a:hover {
+          text-decoration: underline;
+        }
+
+        /* Alerts */
+        .alert-danger {
+          background: #fef2f2;
+          border: 1px solid #fee2e2;
+          color: #ef4444;
+          padding: 0.75rem;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+          font-size: 0.85rem;
+          text-align: left;
+        }
+        
+        .invalid-feedback {
+          color: #ef4444;
+          font-size: 0.8rem;
+          margin-top: 0.25rem;
+          text-align: left;
+        }
+
+        /* Fix Autofill Styles */
+        input:-webkit-autofill {
+          -webkit-box-shadow: 0 0 0 30px white inset !important;
+          -webkit-text-fill-color: #1e293b !important;
+        }
+        
+        @media (max-width: 450px) {
+          .login-container { width: 100%; }
+        }
+      </style>
+    </th:block>
   </head>
+  
   <body>
-    <div layout:fragment="content" class="mt-5">
-      <form
-        th:action="@{/auth/login/post}"
-        method="post"
-        th:object="${loginForm}"
-      >
-        <div class="card mx-auto" style="max-width: 360px">
-          <div class="card-body">
-            <div>
-              <div class="text-center">
-                <img
-                  th:src="@{/assets/images/resto.png}"
-                  alt="resto"
-                  width="64"
-                />
-                <hr />
-                <h5>Masuk</h5>
-                <span class="text-muted">
-                  Masuk menggunakan kredensial akun Anda untuk melanjutkan
-                </span>
-                <hr />
+    <div layout:fragment="content">
+      <div class="login-container">
+        <form th:action="@{/auth/login/post}" method="post" th:object="${loginForm}">
+          
+          <div class="login-card">
+            <!-- Header -->
+            <div class="login-header">
+              <div class="logo-wrapper">
+                <img th:src="@{/assets/images/resto.png}" alt="Logo" />
+              </div>
+              <h1 class="login-title">Selamat Datang! 👋</h1>
+              <p class="login-subtitle">Masuk ke Ananta-Resto Menu Management</p>
+            </div>
+
+            <!-- Body -->
+            <div class="login-body">
+              <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                <div th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
               </div>
 
-              <!-- Pesan Error Global -->
-              <div
-                th:if="${#fields.hasGlobalErrors()}"
-                class="alert alert-danger"
-              >
-                <th:block
-                  th:each="err : ${#fields.globalErrors()}"
-                  th:text="${err}"
-                ></th:block>
-              </div>
-
-              <!-- Alamat Email -->
-              <div class="form-group mb-3">
-                <label for="inputEmail">Email</label>
+              <!-- Email -->
+              <div class="input-wrapper">
+                <label for="inputEmail" class="form-label">Alamat Email</label>
+                <span class="input-icon">📧</span>
                 <input
                   type="email"
                   class="form-control"
                   id="inputEmail"
                   th:field="*{email}"
+                  placeholder="nama@email.com"
                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
-                  autocomplete="email"
+                  required
                 />
-                <div
-                  th:if="${#fields.hasErrors('email')}"
-                  class="invalid-feedback"
-                >
-                  <th:block
-                    th:each="err : ${#fields.errors('email')}"
-                    th:text="${err}"
-                  ></th:block>
+                <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                  <div th:each="err : ${#fields.errors('email')}" th:text="${err}"></div>
                 </div>
               </div>
 
-              <!-- Kata Sandi -->
-              <div class="form-group mb-3">
-                <label for="inputPassword">Kata Sandi</label>
+              <!-- Password -->
+              <div class="input-wrapper">
+                <label for="inputPassword" class="form-label">Kata Sandi</label>
+                <span class="input-icon">🔒</span>
                 <input
                   type="password"
                   class="form-control"
                   id="inputPassword"
                   th:field="*{password}"
+                  placeholder="Masukkan kata sandi"
                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
-                  autocomplete="current-password"
+                  required
                 />
-                <div
-                  th:if="${#fields.hasErrors('password')}"
-                  class="invalid-feedback"
-                >
-                  <th:block
-                    th:each="err : ${#fields.errors('password')}"
-                    th:text="${err}"
-                  ></th:block>
+                <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+                <div th:if="${#fields.hasErrors('password')}" class="invalid-feedback">
+                  <div th:each="err : ${#fields.errors('password')}" th:text="${err}"></div>
                 </div>
               </div>
 
               <!-- Remember Me -->
-              <div class="form-group mb-3 form-check">
+              <div class="form-check">
                 <input
                   type="checkbox"
                   class="form-check-input"
                   id="optionRememberMe"
                   th:field="*{rememberMe}"
                 />
-                <label class="form-check-label" for="optionRememberMe"
-                  >Ingat saya</label
-                >
+                <label class="form-check-label" for="optionRememberMe">
+                  Ingat saya
+                </label>
               </div>
 
-              <!-- Tombol Masuk -->
-              <div class="form-group mt-3 text-end">
-                <button type="submit" class="btn btn-primary btn-block">
-                  Masuk
-                </button>
-              </div>
+              <!-- Submit -->
+              <button type="submit" class="btn-login">
+                Masuk Sekarang
+              </button>
+            </div>
 
-              <hr />
-              <p class="text-center">
-                Belum memiliki akun?
-                <a th:href="@{/auth/register}">Daftar</a>
-              </p>
+            <!-- Footer -->
+            <div class="login-footer">
+              Belum memiliki akun? <a th:href="@{/auth/register}">Daftar sekarang →</a>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
+
+    <script layout:fragment="others-js">
+      function togglePassword() {
+        const passwordInput = document.getElementById('inputPassword');
+        const toggleBtn = document.querySelector('.password-toggle');
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleBtn.textContent = '❌';
+        } else {
+          passwordInput.type = 'password';
+          toggleBtn.textContent = '👁️';
+        }
+      }
+    </script>
   </body>
 </html>
