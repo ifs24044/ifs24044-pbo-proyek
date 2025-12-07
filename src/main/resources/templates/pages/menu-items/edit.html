@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="editMenuModal">
+  <style>
+    /* Modern Card Style */
+    #editMenuModal .modal-content {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    }
+    
+    /* Header Gradient */
+    #editMenuModal .modal-header {
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      border-radius: 16px 16px 0 0;
+      padding: 1.5rem;
+      border: none;
+    }
+    
+    #editMenuModal .modal-title {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    #editMenuModal .btn-close {
+      filter: brightness(0) invert(1);
+      opacity: 0.8;
+    }
+    
+    #editMenuModal .btn-close:hover {
+      opacity: 1;
+    }
+    
+    /* Body Styling */
+    #editMenuModal .modal-body {
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+    
+    /* Form Labels */
+    #editMenuModal .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    
+    /* Input Styling */
+    #editMenuModal .form-control,
+    #editMenuModal .form-select {
+      border: 2px solid #e9ecef;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    #editMenuModal .form-control:focus,
+    #editMenuModal .form-select:focus {
+      border-color: #ffc107;
+      box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.15);
+      background: white;
+    }
+    
+    /* Input Icons */
+    .input-icon-wrapper {
+      position: relative;
+    }
+    
+    .input-icon-wrapper .input-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #adb5bd;
+      pointer-events: none;
+    }
+    
+    .input-icon-wrapper .form-control {
+      padding-right: 2.5rem;
+    }
+    
+    /* Card Sections */
+    .form-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #343a40;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #ffc107;
+      display: inline-block;
+    }
+    
+    /* Alert Styling */
+    #editMenuModal .alert {
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Footer Styling */
+    #editMenuModal .modal-footer {
+      padding: 1.5rem 2rem;
+      border-top: 2px solid #e9ecef;
+      background: white;
+      border-radius: 0 0 16px 16px;
+    }
+    
+    /* Button Styling */
+    #editMenuModal .btn {
+      padding: 0.75rem 2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    
+    #editMenuModal .btn-warning {
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+    }
+    
+    #editMenuModal .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 193, 7, 0.5);
+    }
+    
+    #editMenuModal .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    #editMenuModal .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+    
+    /* Required Star */
+    .text-danger {
+      color: #dc3545;
+    }
+    
+    /* Textarea */
+    #editMenuModal textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      #editMenuModal .modal-body {
+        padding: 1.5rem;
+      }
+      
+      .form-section {
+        padding: 1rem;
+      }
+    }
+  </style>
+
+  <div
+    class="modal fade"
+    id="editMenuModal"
+    tabindex="-1"
+    aria-labelledby="editMenuModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form th:action="@{/menu-items/edit}" method="post" th:object="${menuItemForm}" onsubmit="return validateEditForm()">
+          <!-- ✅ PERBAIKAN: Gunakan name="id" bukan th:field untuk hidden input -->
+          <input type="hidden" id="editMenuId" name="id" />
+          
+          <div class="modal-header">
+            <h5 class="modal-title" id="editMenuModalLabel">✏️ Edit Menu</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          
+          <div class="modal-body">
+            <!-- Alert Error -->
+            <div
+              th:if="${error != null && editMenuModalOpen}"
+              class="alert alert-danger alert-dismissible fade show"
+              role="alert"
+            >
+              <strong>❌ Error!</strong> <span th:text="${error}"></span>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <!-- Basic Information Section -->
+            <div class="form-section">
+              <div class="section-title">📋 Informasi Dasar</div>
+              <div class="row">
+                <!-- Nama Menu -->
+                <div class="col-md-8 mb-3">
+                  <label for="editMenuName" class="form-label">
+                    Nama Menu <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="editMenuName"
+                    name="name"
+                    placeholder="Contoh: Nasi Goreng Spesial"
+                    required
+                  />
+                </div>
+
+                <!-- Kategori -->
+                <div class="col-md-4 mb-3">
+                  <label for="editMenuCategory" class="form-label">
+                    Kategori <span class="text-danger">*</span>
+                  </label>
+                  <select class="form-select" id="editMenuCategory" name="category" required>
+                    <option value="">Pilih Kategori</option>
+                    <option value="Appetizer">🥗 Appetizer</option>
+                    <option value="Main Course">🍛 Main Course</option>
+                    <option value="Dessert">🍰 Dessert</option>
+                    <option value="Beverage">🥤 Beverage</option>
+                  </select>
+                </div>
+
+                <!-- Deskripsi -->
+                <div class="col-md-12 mb-0">
+                  <label for="editMenuDescription" class="form-label">
+                    Deskripsi Menu
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="editMenuDescription"
+                    name="description"
+                    placeholder="Tuliskan deskripsi menarik tentang menu ini..."
+                    rows="3"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing & Time Section -->
+            <div class="form-section">
+              <div class="section-title">💰 Harga & Waktu</div>
+              <div class="row">
+                <!-- Harga -->
+                <div class="col-md-6 mb-3">
+                  <label for="editMenuPrice" class="form-label">
+                    Harga (Rp) <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-icon-wrapper">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="editMenuPrice"
+                      name="price"
+                      min="0"
+                      step="any"
+                      placeholder="---"
+                      required
+                    />
+                    <span class="input-icon">💵</span>
+                  </div>
+                </div>
+
+                <!-- Waktu Persiapan -->
+                <div class="col-md-6 mb-0">
+                  <label for="editMenuPreparationTime" class="form-label">
+                    Waktu Siap (menit) <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-icon-wrapper">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="editMenuPreparationTime"
+                      name="preparationTime"
+                      min="1"
+                      max="180"
+                      placeholder="15"
+                      required
+                    />
+                    <span class="input-icon">⏱️</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Additional Info Section -->
+            <div class="form-section">
+              <div class="section-title">ℹ️ Informasi Tambahan</div>
+              <div class="row">
+                <!-- Kalori -->
+                <div class="col-md-6 mb-3">
+                  <label for="editMenuCalories" class="form-label">
+                    Kalori (kcal) <span class="text-muted">(Opsional)</span>
+                  </label>
+                  <div class="input-icon-wrapper">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="editMenuCalories"
+                      name="calories"
+                      min="0"
+                      placeholder="---"
+                    />
+                  </div>
+                </div>
+
+                <!-- Status Ketersediaan -->
+                <div class="col-md-6 mb-0">
+                  <label for="editMenuIsAvailable" class="form-label">
+                    Status Ketersediaan <span class="text-danger">*</span>
+                  </label>
+                  <select class="form-select" id="editMenuIsAvailable" name="isAvailable" required>
+                    <option value="true">✅ Tersedia</option>
+                    <option value="false">❌ Tidak Tersedia</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- ✅ HIDDEN FIELD: SpicyLevel dengan default value 0 -->
+            <input type="hidden" id="editMenuSpicyLevel" name="spicyLevel" value="0" />
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              ❌ Batal
+            </button>
+            <button type="submit" class="btn btn-warning">
+              ✅ Simpan Perubahan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function validateEditForm() {
+      const name = document.getElementById('editMenuName').value.trim();
+      const category = document.getElementById('editMenuCategory').value;
+      const price = document.getElementById('editMenuPrice').value;
+      const prepTime = document.getElementById('editMenuPreparationTime').value;
+      const isAvailable = document.getElementById('editMenuIsAvailable').value;
+
+      if (!name || !category || !price || !prepTime || !isAvailable) {
+        alert('⚠️ Mohon lengkapi semua field yang wajib diisi (*)');
+        return false;
+      }
+
+      if (parseFloat(price) <= 0) {
+        alert('⚠️ Harga harus lebih dari 0');
+        return false;
+      }
+
+      if (parseInt(prepTime) < 1 || parseInt(prepTime) > 180) {
+        alert('⚠️ Waktu persiapan harus antara 1-180 menit');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Reset form ketika modal ditutup
+    document.getElementById('editMenuModal').addEventListener('hidden.bs.modal', function () {
+      document.getElementById('editMenuModal').querySelector('form').reset();
+    });
+  </script>
+</html>

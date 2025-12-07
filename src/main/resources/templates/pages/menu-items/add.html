@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="addMenuModal">
+  <div
+    class="modal fade"
+    id="addMenuModal"
+    tabindex="-1"
+    aria-labelledby="addMenuModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form th:action="@{/menu-items/add}" method="post" enctype="multipart/form-data" th:object="${menuItemForm}" onsubmit="return validateAddForm()">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="addMenuModalLabel">➕ Tambah Menu Baru</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- Alert Error -->
+            <div
+              th:if="${error != null && addMenuModalOpen}"
+              class="alert alert-danger alert-dismissible fade show"
+              role="alert"
+            >
+              <strong>Error!</strong> <span th:text="${error}"></span>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <div class="row">
+              <!-- Upload Gambar -->
+              <div class="col-md-12 mb-3">
+                <label for="addMenuImage" class="form-label">📷 Gambar Menu <span class="text-muted">(Opsional)</span></label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="addMenuImage"
+                  name="imageFile"
+                  accept="image/jpeg,image/png,image/gif,image/jpg"
+                  onchange="previewAddImage(event)"
+                />
+                <small class="text-muted">Format: JPG, PNG, GIF. Maksimal 5MB</small>
+                
+                <!-- Preview Image - Centered -->
+                <div id="addImagePreview" class="mt-3 text-center" style="display: none;">
+                  <div class="position-relative d-inline-block">
+                    <img id="addPreviewImg" src="" alt="Preview" 
+                        class="img-thumbnail" 
+                        style="max-height: 250px; max-width: 100%; object-fit: cover;">
+                    <div class="mt-2">
+                      <button type="button" class="btn btn-danger btn-sm" onclick="removeAddPreview()">
+                        ❌ Hapus Gambar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nama Menu -->
+              <div class="col-md-8 mb-3">
+                <label for="addMenuName" class="form-label">Nama Menu <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="addMenuName"
+                  th:field="*{name}"
+                  placeholder="Contoh: Nasi Goreng Special"
+                  required
+                />
+              </div>
+
+              <!-- Kategori -->
+              <div class="col-md-4 mb-3">
+                <label for="addMenuCategory" class="form-label">Kategori <span class="text-danger">*</span></label>
+                <select class="form-select" id="addMenuCategory" th:field="*{category}" required>
+                  <option value="">Pilih Kategori</option>
+                  <option value="Appetizer">🥗 Appetizer</option>
+                  <option value="Main Course">🍛 Main Course</option>
+                  <option value="Dessert">🍰 Dessert</option>
+                  <option value="Beverage">🥤 Beverage</option>
+                </select>
+              </div>
+
+              <!-- Status Ketersediaan -->
+              <div class="col-md-4 mb-3">
+                <label for="addMenuAvailable" class="form-label">Status Menu</label>
+                <div class="form-check form-switch">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    id="addMenuAvailable" 
+                    th:field="*{isAvailable}" 
+                    checked />
+                  <label class="form-check-label" for="addMenuAvailable">
+                    <span id="addMenuAvailableLabel">Tersedia</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Harga - BEBAS INPUT ANGKA -->
+              <div class="col-md-4 mb-3">
+                <label for="addMenuPrice" class="form-label">Harga (Rp) <span class="text-danger">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="addMenuPrice"
+                  th:field="*{price}"
+                  placeholder="..."
+                  min="0"
+                  step="any"
+                  required
+                />
+              </div>
+
+              <!-- Waktu Persiapan -->
+              <div class="col-md-4 mb-3">
+                <label for="addMenuPreparationTime" class="form-label">Waktu Siap (menit) <span class="text-danger">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="addMenuPreparationTime"
+                  th:field="*{preparationTime}"
+                  placeholder="..."
+                  min="1"
+                  max="180"
+                  required
+                />
+              </div>
+
+              <!-- Kalori - OPSIONAL -->
+              <div class="col-md-4 mb-3">
+                <label for="addMenuCalories" class="form-label"> Kalori <span class="text-muted">(Opsional)</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="addMenuCalories"
+                  th:field="*{calories}"
+                  placeholder="..."
+                  min="0"
+                  step="1"
+                />
+                <small class="text-muted">dalam kkal</small>
+              </div>
+
+              <!-- Deskripsi -->
+              <div class="col-md-12 mb-3">
+                <label for="addMenuDescription" class="form-label">Deskripsi</label>
+                <textarea
+                  class="form-control"
+                  id="addMenuDescription"
+                  th:field="*{description}"
+                  rows="3"
+                  placeholder="Deskripsi menu, bahan-bahan, dll..."
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Batal
+            </button>
+            <button type="submit" class="btn btn-primary">
+              ➕ Tambah Menu
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update teks status secara realtime
+    document.addEventListener("DOMContentLoaded", function () {
+      const checkbox = document.getElementById("addMenuAvailable");
+      const label = document.getElementById("addMenuAvailableLabel");
+
+      function updateLabel() {
+        label.textContent = checkbox.checked ? "Tersedia" : "Tidak Tersedia";
+      }
+
+      if (checkbox) {
+        checkbox.addEventListener("change", updateLabel);
+        updateLabel();
+      }
+    });
+
+    function previewAddImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        // Validasi ukuran (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Ukuran file terlalu besar! Maksimal 5MB.');
+          event.target.value = '';
+          return;
+        }
+
+        // Validasi tipe
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+          alert('Format file tidak didukung! Gunakan JPG, PNG, atau GIF.');
+          event.target.value = '';
+          return;
+        }
+
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('addPreviewImg').src = e.target.result;
+          document.getElementById('addImagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeAddPreview() {
+      document.getElementById('addMenuImage').value = '';
+      document.getElementById('addImagePreview').style.display = 'none';
+      document.getElementById('addPreviewImg').src = '';
+    }
+
+    function validateAddForm() {
+      const name = document.getElementById('addMenuName').value;
+      const category = document.getElementById('addMenuCategory').value;
+      const price = document.getElementById('addMenuPrice').value;
+      const prepTime = document.getElementById('addMenuPreparationTime').value;
+
+      if (!name || !category || !price || !prepTime) {
+        alert('Mohon lengkapi semua field yang wajib diisi (*)');
+        return false;
+      }
+
+      if (parseFloat(price) <= 0) {
+        alert('Harga harus lebih dari 0');
+        return false;
+      }
+
+      if (parseInt(prepTime) <= 0) {
+        alert('Waktu persiapan harus lebih dari 0');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Reset form saat modal ditutup
+    const addMenuModal = document.getElementById('addMenuModal');
+    if (addMenuModal) {
+      addMenuModal.addEventListener('hidden.bs.modal', function () {
+        document.getElementById('addMenuImage').value = '';
+        document.getElementById('addImagePreview').style.display = 'none';
+        document.getElementById('addPreviewImg').src = '';
+      });
+    }
+  </script>
+</html>

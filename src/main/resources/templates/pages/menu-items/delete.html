@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="deleteMenuModal">
+  <div
+    class="modal fade"
+    id="deleteMenuModal"
+    tabindex="-1"
+    aria-labelledby="deleteMenuModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form th:action="@{/menu-items/delete}" method="post" th:object="${menuItemForm}">
+          <input type="hidden" id="deleteMenuId" th:field="*{id}" />
+          
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteMenuModalLabel">🗑️ Hapus Menu</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- Alert Error -->
+            <div
+              th:if="${error != null && deleteMenuModalOpen}"
+              class="alert alert-danger alert-dismissible fade show"
+              role="alert"
+            >
+              <strong>Error!</strong> <span th:text="${error}"></span>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <div class="alert alert-warning">
+              <strong>⚠️ Peringatan!</strong>
+              <p class="mb-0">
+                Anda akan menghapus menu: <strong id="deleteMenuName"></strong>
+              </p>
+              <p class="mb-0 mt-2">
+                Tindakan ini tidak dapat dibatalkan!
+              </p>
+            </div>
+
+            <div class="mb-3">
+              <label for="deleteMenuConfirmName" class="form-label">
+                Ketik ulang nama menu untuk konfirmasi <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="deleteMenuConfirmName"
+                th:field="*{confirmName}"
+                placeholder="Ketik nama menu..."
+                required
+              />
+              <small class="text-muted">
+                Pastikan nama yang diketik sama persis dengan nama menu di atas.
+              </small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Batal
+            </button>
+            <button type="submit" class="btn btn-danger">
+              🗑️ Ya, Hapus Menu
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function validateDeleteForm() {
+      const confirmName = document.getElementById('deleteMenuConfirmName').value;
+      const menuName = document.getElementById('deleteMenuName').innerText;
+
+      if (!confirmName) {
+        alert('Mohon ketik nama menu untuk konfirmasi');
+        return false;
+      }
+
+      if (confirmName !== menuName) {
+        alert('Nama yang diketik tidak sesuai dengan nama menu');
+        return false;
+      }
+
+      return confirm('Apakah Anda yakin ingin menghapus menu ini? Tindakan ini tidak dapat dibatalkan.');
+    }
+  </script>
+</html>

@@ -8,6 +8,7 @@ import org.delcom.app.entities.User;
 import org.delcom.app.services.AuthTokenService;
 import org.delcom.app.services.UserService;
 import org.delcom.app.utils.ConstUtil;
+
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,11 +18,13 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
@@ -40,28 +43,34 @@ public class AuthView {
         this.userService = userService;
     }
 
+    // ===========================
+    // LOGIN PAGE
+    // ===========================
     @GetMapping("/login")
     public String showLogin(Model model, HttpSession session) {
-        // Cek apakah sudah login
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isLoggedIn = auth != null
                 && auth.isAuthenticated()
                 && !(auth instanceof AnonymousAuthenticationToken);
+
         if (isLoggedIn) {
             return "redirect:/";
         }
 
         model.addAttribute("loginForm", new LoginForm());
-        return ConstUtil.TEMPLATE_PAGES_AUTH_LOGIN;
+        return ConstUtil.TEMPLATE_PAGES_AUTH_LOGIN;   // pages/auth/login.html
     }
 
+    // ===========================
+    // LOGIN PROCESS
+    // ===========================
     @PostMapping("/login/post")
     public String postLogin(@Valid @ModelAttribute("loginForm") LoginForm loginForm,
-            BindingResult bindingResult,
-            HttpSession session,
-            Model model) {
+                            BindingResult bindingResult,
+                            HttpSession session,
+                            Model model) {
 
-        // Validasi form
         if (bindingResult.hasErrors()) {
             return ConstUtil.TEMPLATE_PAGES_AUTH_LOGIN;
         }
@@ -74,12 +83,12 @@ public class AuthView {
 
         boolean isPasswordMatch = new BCryptPasswordEncoder()
                 .matches(loginForm.getPassword(), existingUser.getPassword());
+
         if (!isPasswordMatch) {
             bindingResult.rejectValue("email", "error.loginForm", "Email atau kata sandi salah");
             return ConstUtil.TEMPLATE_PAGES_AUTH_LOGIN;
         }
 
-        // Set authenticated user ke session
         List<GrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority("ROLE_USER"));
 
@@ -99,37 +108,42 @@ public class AuthView {
         return "redirect:/";
     }
 
+    // ===========================
+    // REGISTER PAGE
+    // ===========================
     @GetMapping("/register")
     public String showRegister(Model model, HttpSession session) {
-        // Cek apakah sudah login
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isLoggedIn = auth != null
                 && auth.isAuthenticated()
                 && !(auth instanceof AnonymousAuthenticationToken);
+
         if (isLoggedIn) {
             return "redirect:/";
         }
 
         model.addAttribute("registerForm", new RegisterForm());
-        return ConstUtil.TEMPLATE_PAGES_AUTH_REGISTER;
+        return ConstUtil.TEMPLATE_PAGES_AUTH_REGISTER;    // pages/auth/register.html
     }
 
+    // ===========================
+    // REGISTER PROCESS
+    // ===========================
     @PostMapping("/register/post")
     public String postRegister(@Valid @ModelAttribute("registerForm") RegisterForm registerForm,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            HttpSession session,
-            Model model) {
+                               BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes,
+                               HttpSession session,
+                               Model model) {
 
-        // Validasi form
         if (bindingResult.hasErrors()) {
             return ConstUtil.TEMPLATE_PAGES_AUTH_REGISTER;
         }
 
-        // Cek apakah email sudah terdaftar
         User existingUser = userService.getUserByEmail(registerForm.getEmail());
         if (existingUser != null) {
-            bindingResult.rejectValue("email", "error.registerForm", "Pengguna dengan email ini sudah terdaftar");
+            bindingResult.rejectValue("email", "error.registerForm", "Email sudah terdaftar");
             return ConstUtil.TEMPLATE_PAGES_AUTH_REGISTER;
         }
 
@@ -145,12 +159,13 @@ public class AuthView {
             return ConstUtil.TEMPLATE_PAGES_AUTH_REGISTER;
         }
 
-        // 🔥 Kirim pesan sukses pakai Flash Attribute
         redirectAttributes.addFlashAttribute("success", "Akun berhasil dibuat! Silakan login.");
-
         return "redirect:/auth/login";
     }
 
+    // ===========================
+    // LOGOUT
+    // ===========================
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();

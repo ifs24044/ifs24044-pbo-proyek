@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/base}"
+  lang="id"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistik Menu</title>
+    
+    <!-- Custom CSS -->
+    <th:block layout:fragment="others-css">
+      <style>
+        .stat-card {
+          background: white;
+          border-radius: 15px;
+          padding: 25px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+          text-align: center;
+          transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+          transform: translateY(-5px);
+        }
+        
+        .stat-card h6 {
+          color: #666;
+          font-weight: 600;
+          margin-bottom: 15px;
+        }
+        
+        .stat-card h2 {
+          color: #333;
+          font-weight: 700;
+          font-size: 2.5rem;
+          margin: 0;
+        }
+        
+        .chart-card {
+          background: white;
+          border-radius: 15px;
+          padding: 25px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+          margin-bottom: 25px;
+        }
+        
+        .chart-card .card-header {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          font-weight: 600;
+          border-radius: 10px;
+          padding: 15px 20px;
+          margin-bottom: 20px;
+        }
+      </style>
+    </th:block>
+  </head>
+  
+  <body>
+    <div layout:fragment="content" class="container mt-4 mb-5">
+      
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-1">
+            <span style="font-size: 2rem;">📊</span> Statistik Menu Restoran
+          </h2>
+          <p class="text-muted mb-0">Visualisasi data menu dan analisis penjualan</p>
+        </div>
+        <a th:href="@{/}" class="btn btn-secondary" style="border-radius: 25px;">
+          ← Kembali
+        </a>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+          <div class="stat-card" style="border-left: 4px solid #667eea;">
+            <h6>Total Menu</h6>
+            <h2 th:text="${totalMenus}">0</h2>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="stat-card" style="border-left: 4px solid #28a745;">
+            <h6>Menu Tersedia</h6>
+            <h2 th:text="${availableMenus}">0</h2>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="stat-card" style="border-left: 4px solid #ffc107;">
+            <h6>Rata-rata Harga</h6>
+            <h2 th:text="'Rp ' + ${#numbers.formatDecimal(averagePrice, 0, 'COMMA', 0, 'POINT')}">Rp 0</h2>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="stat-card" style="border-left: 4px solid #17a2b8;">
+            <h6>Total Kategori</h6>
+            <h2 th:text="${totalCategories}">0</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="row">
+        <!-- Chart 1: Pie Chart - Jumlah Menu per Kategori -->
+        <div class="col-lg-6 mb-4">
+          <div class="chart-card">
+            <div class="card-header">
+              <h5 class="mb-0">📈 Jumlah Menu per Kategori</h5>
+            </div>
+            <canvas id="categoryCountChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Bar Chart - Rata-rata Harga per Kategori -->
+        <div class="col-lg-6 mb-4">
+          <div class="chart-card">
+            <div class="card-header">
+              <h5 class="mb-0">💰 Rata-rata Harga per Kategori</h5>
+            </div>
+            <canvas id="averagePriceChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 3: Horizontal Bar - Total Nilai Menu per Kategori -->
+        <div class="col-lg-12 mb-4">
+          <div class="chart-card">
+            <div class="card-header">
+              <h5 class="mb-0">💵 Total Nilai Menu per Kategori</h5>
+            </div>
+            <canvas id="totalPriceChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <th:block layout:fragment="others-js">
+      <!-- Chart.js CDN -->
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+      
+      <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function() {
+          // Data dari backend
+          const categoryCountData = /*[[${categoryCountData}]]*/ [];
+          const averagePriceData = /*[[${averagePriceData}]]*/ [];
+          const totalPriceData = /*[[${totalPriceData}]]*/ [];
+
+          // Debug - cek data di console
+          console.log("=== CHART DATA DEBUG ===");
+          console.log("categoryCountData:", categoryCountData);
+          console.log("averagePriceData:", averagePriceData);
+          console.log("totalPriceData:", totalPriceData);
+
+          // Warna untuk chart
+          const chartColors = {
+            'Appetizer': 'rgba(255, 99, 132, 0.8)',
+            'Main Course': 'rgba(54, 162, 235, 0.8)',
+            'Dessert': 'rgba(255, 206, 86, 0.8)',
+            'Beverage': 'rgba(75, 192, 192, 0.8)'
+          };
+
+          const borderColors = {
+            'Appetizer': 'rgba(255, 99, 132, 1)',
+            'Main Course': 'rgba(54, 162, 235, 1)',
+            'Dessert': 'rgba(255, 206, 86, 1)',
+            'Beverage': 'rgba(75, 192, 192, 1)'
+          };
+
+          // ============================================
+          // Chart 1: Pie Chart - Jumlah Menu per Kategori
+          // ============================================
+          const categoryCountCtx = document.getElementById('categoryCountChart');
+          if (categoryCountCtx && categoryCountData.length > 0) {
+            new Chart(categoryCountCtx, {
+              type: 'pie',
+              data: {
+                labels: categoryCountData.map(item => item.category),
+                datasets: [{
+                  label: 'Jumlah Menu',
+                  data: categoryCountData.map(item => item.count),
+                  backgroundColor: categoryCountData.map(item => chartColors[item.category] || 'rgba(128, 128, 128, 0.8)'),
+                  borderColor: categoryCountData.map(item => borderColors[item.category] || 'rgba(128, 128, 128, 1)'),
+                  borderWidth: 2
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: {
+                      padding: 15,
+                      font: {
+                        size: 12
+                      }
+                    }
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        return context.label + ': ' + context.parsed + ' menu';
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          } else {
+            console.warn("Chart 1: No data atau canvas tidak ditemukan");
+            if (categoryCountCtx) {
+              categoryCountCtx.parentElement.innerHTML = '<p class="text-center text-muted py-5">Tidak ada data untuk ditampilkan</p>';
+            }
+          }
+
+          // ============================================
+          // Chart 2: Bar Chart - Rata-rata Harga per Kategori
+          // ============================================
+          const averagePriceCtx = document.getElementById('averagePriceChart');
+          if (averagePriceCtx && averagePriceData.length > 0) {
+            new Chart(averagePriceCtx, {
+              type: 'bar',
+              data: {
+                labels: averagePriceData.map(item => item.category),
+                datasets: [{
+                  label: 'Rata-rata Harga (Rp)',
+                  data: averagePriceData.map(item => item.averagePrice),
+                  backgroundColor: averagePriceData.map(item => chartColors[item.category] || 'rgba(128, 128, 128, 0.8)'),
+                  borderColor: averagePriceData.map(item => borderColors[item.category] || 'rgba(128, 128, 128, 1)'),
+                  borderWidth: 2
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function(value) {
+                        return 'Rp ' + value.toLocaleString('id-ID');
+                      }
+                    }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    display: false
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          } else {
+            console.warn("Chart 2: No data atau canvas tidak ditemukan");
+            if (averagePriceCtx) {
+              averagePriceCtx.parentElement.innerHTML = '<p class="text-center text-muted py-5">Tidak ada data untuk ditampilkan</p>';
+            }
+          }
+
+          // ============================================
+          // Chart 3: Horizontal Bar - Total Nilai Menu
+          // ============================================
+          const totalPriceCtx = document.getElementById('totalPriceChart');
+          if (totalPriceCtx && totalPriceData.length > 0) {
+            new Chart(totalPriceCtx, {
+              type: 'bar',
+              data: {
+                labels: totalPriceData.map(item => item.category),
+                datasets: [{
+                  label: 'Total Nilai (Rp)',
+                  data: totalPriceData.map(item => item.totalPrice),
+                  backgroundColor: totalPriceData.map(item => chartColors[item.category] || 'rgba(128, 128, 128, 0.8)'),
+                  borderColor: totalPriceData.map(item => borderColors[item.category] || 'rgba(128, 128, 128, 1)'),
+                  borderWidth: 2
+                }]
+              },
+              options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                  x: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function(value) {
+                        return 'Rp ' + value.toLocaleString('id-ID');
+                      }
+                    }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    display: false
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function(context) {
+                        return 'Rp ' + context.parsed.x.toLocaleString('id-ID');
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          } else {
+            console.warn("Chart 3: No data atau canvas tidak ditemukan");
+            if (totalPriceCtx) {
+              totalPriceCtx.parentElement.innerHTML = '<p class="text-center text-muted py-5">Tidak ada data untuk ditampilkan</p>';
+            }
+          }
+
+          console.log("=== CHARTS INITIALIZED ===");
+        });
+        /*]]>*/
+      </script>
+    </th:block>
+  </body>
+</html>

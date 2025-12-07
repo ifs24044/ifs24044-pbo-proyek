@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="editMenuImageModal">
+  <style>
+    /* Modern Upload Modal Style */
+    #editMenuImageModal .modal-content {
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    
+    #editMenuImageModal .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1.5rem 2rem;
+    }
+    
+    #editMenuImageModal .modal-title {
+      font-weight: 700;
+      font-size: 1.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    #editMenuImageModal .btn-close {
+      filter: brightness(0) invert(1);
+      opacity: 0.9;
+    }
+    
+    #editMenuImageModal .modal-body {
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+    
+    /* Upload Area Styling */
+    .upload-area {
+      border: 3px dashed #667eea;
+      border-radius: 15px;
+      padding: 3rem 2rem;
+      text-align: center;
+      background: white;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .upload-area:hover {
+      border-color: #764ba2;
+      background: #f8f9ff;
+      transform: scale(1.02);
+    }
+    
+    .upload-area.dragover {
+      border-color: #28a745;
+      background: #e8f5e9;
+    }
+    
+    .upload-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .upload-text {
+      color: #667eea;
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .upload-hint {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+    
+    /* Preview Styling */
+    .image-preview-container {
+      position: relative;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .preview-image {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 10px;
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .remove-preview {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    }
+    
+    .remove-preview:hover {
+      background: #c82333;
+      transform: scale(1.1);
+    }
+    
+    /* File Input Hidden */
+    #imageFileInput {
+      display: none;
+    }
+    
+    /* Modal Footer */
+    #editMenuImageModal .modal-footer {
+      background: white;
+      border-top: 2px solid #e9ecef;
+      padding: 1.5rem 2rem;
+    }
+    
+    #editMenuImageModal .btn {
+      padding: 0.75rem 2rem;
+      border-radius: 25px;
+      font-weight: 600;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    
+    #editMenuImageModal .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    #editMenuImageModal .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+    }
+    
+    #editMenuImageModal .btn-primary:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    #editMenuImageModal .btn-secondary {
+      background: #6c757d;
+    }
+    
+    #editMenuImageModal .btn-secondary:hover {
+      background: #5a6268;
+    }
+  </style>
+
+  <div
+    class="modal fade"
+    id="editMenuImageModal"
+    tabindex="-1"
+    aria-labelledby="editMenuImageModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <form th:action="@{/menu-items/edit-image}" method="post" enctype="multipart/form-data" th:object="${menuImageForm}" id="uploadImageForm">
+          <input type="hidden" th:field="*{id}" />
+          
+          <div class="modal-header">
+            <h5 class="modal-title" id="editMenuImageModalLabel">
+              📷 Upload Gambar Menu
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          
+          <div class="modal-body">
+            <!-- Alert Error -->
+            <div
+              th:if="${error != null && editMenuImageModalOpen}"
+              class="alert alert-danger alert-dismissible fade show"
+              role="alert"
+            >
+              <strong>❌ Error!</strong> <span th:text="${error}"></span>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <!-- Upload Area -->
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageFileInput').click()">
+              <div class="upload-icon">📸</div>
+              <div class="upload-text">Klik untuk memilih gambar</div>
+              <div class="upload-hint">atau drag & drop file di sini</div>
+              <div class="upload-hint mt-2">
+                <small>Format: JPG, PNG, GIF • Maksimal 5MB</small>
+              </div>
+            </div>
+
+            <!-- Hidden File Input -->
+            <input
+              type="file"
+              id="imageFileInput"
+              name="imageFile"
+              accept="image/jpeg,image/png,image/gif,image/jpg"
+              onchange="handleFileSelect(event)"
+            />
+
+            <!-- Image Preview -->
+            <div id="imagePreviewContainer" style="display: none;" class="image-preview-container">
+              <button type="button" class="remove-preview" onclick="removePreview()" title="Hapus gambar">
+                ✕
+              </button>
+              <img id="imagePreview" src="" alt="Preview" class="preview-image" />
+              <div class="text-center mt-3">
+                <small class="text-muted" id="fileName"></small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              ❌ Batal
+            </button>
+            <button type="submit" class="btn btn-primary" id="uploadButton" disabled>
+              ✅ Upload Gambar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedFile = null;
+
+    // Handle file selection
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      
+      if (!file) {
+        return;
+      }
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        alert('❌ Format file tidak didukung! Gunakan JPG, PNG, atau GIF.');
+        event.target.value = '';
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('❌ Ukuran file terlalu besar! Maksimal 5MB.');
+        event.target.value = '';
+        return;
+      }
+
+      // Store selected file
+      selectedFile = file;
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('imagePreviewContainer').style.display = 'block';
+        document.getElementById('uploadArea').style.display = 'none';
+        document.getElementById('fileName').textContent = file.name + ' (' + formatFileSize(file.size) + ')';
+        document.getElementById('uploadButton').disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Remove preview
+    function removePreview() {
+      selectedFile = null;
+      document.getElementById('imageFileInput').value = '';
+      document.getElementById('imagePreview').src = '';
+      document.getElementById('imagePreviewContainer').style.display = 'none';
+      document.getElementById('uploadArea').style.display = 'block';
+      document.getElementById('uploadButton').disabled = true;
+    }
+
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Drag and drop functionality
+    const uploadArea = document.getElementById('uploadArea');
+
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadArea.classList.remove('dragover');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        document.getElementById('imageFileInput').files = files;
+        handleFileSelect({ target: { files: files } });
+      }
+    });
+
+    // Reset form when modal is closed
+    document.getElementById('editMenuImageModal').addEventListener('hidden.bs.modal', function () {
+      removePreview();
+    });
+
+    // Form validation before submit
+    document.getElementById('uploadImageForm').addEventListener('submit', function(e) {
+      if (!selectedFile) {
+        e.preventDefault();
+        alert('⚠️ Pilih gambar terlebih dahulu!');
+        return false;
+      }
+    });
+  </script>
+</html>

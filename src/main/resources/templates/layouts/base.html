@@ -14,10 +14,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- Icon -->
-    <link rel="icon" th:href="@{/assets/images/logo.png}" type="image/x-icon" />
+    <link rel="icon" th:href="@{/assets/images/resto.png}" type="image/x-icon" />
 
     <!-- Judul -->
-    <title layout:title-pattern="$CONTENT_TITLE">Spring Boot Todolist</title>
+    <title layout:title-pattern="Ananta-Resto Menu Management">
+      Ananta-Resto Menu Management
+    </title>
 
     <!-- Styles -->
     <link
@@ -30,15 +32,209 @@
       th:href="@{/assets/vendor/sweetalert2/dist/sweetalert2.min.css}"
     />
 
+    <!-- Custom Styles untuk Restaurant -->
+    <style>
+      :root {
+        --primary-color: #ff6b35;
+        --secondary-color: #f7931e;
+        --success-color: #28a745;
+        --info-color: #17a2b8;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content-wrapper {
+        flex: 1 0 auto;
+      }
+
+      footer {
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.9);
+        border-top: 1px solid #e0e0e0;
+        margin-top: auto;
+      }
+
+      .navbar-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+
+      .navbar-custom .nav-link,
+      .navbar-custom .navbar-brand,
+      .navbar-custom .dropdown-toggle {
+        color: rgba(255, 255, 255, 0.95) !important;
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      }
+
+      .navbar-custom .nav-link:hover,
+      .navbar-custom .dropdown-toggle:hover {
+        color: #ffffff !important;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+      }
+
+      .navbar-custom .dropdown-menu {
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .badge {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 500;
+      }
+
+      .table {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .table tbody tr {
+        transition: background-color 0.3s ease;
+      }
+
+      .table tbody tr:hover {
+        background-color: #f8f9ff;
+      }
+
+      .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      }
+
+      .modal-header {
+        border-bottom: 2px solid #f0f0f0;
+        border-radius: 20px 20px 0 0;
+      }
+
+      .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+
+      /* Animation */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fade-in {
+        animation: fadeInUp 0.5s ease-out;
+      }
+    </style>
+
     <!-- Slot untuk CSS tambahan -->
     <th:block layout:fragment="others-css"></th:block>
   </head>
 
-  <body class="bg-light">
-    <!-- Slot untuk konten -->
-    <div layout:fragment="content" class="container-fluid">
-      <!-- Konten akan diisi oleh child templates -->
+  <body>
+    <!-- Navbar (Optional - hanya jika authenticated) -->
+    <nav class="navbar navbar-custom navbar-expand-lg navbar-dark" th:if="${auth != null}">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+          <span style="font-size: 1.5rem; margin-right: 10px;">🍽️</span>
+          <span style="font-weight: bold; color: #ffffff;">Ananta-Resto Menu</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/}">
+                📋 Daftar Menu
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/menu-items/chart}">
+                📊 Statistik
+              </a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                👤 <span th:text="${auth.name}">User</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><span class="dropdown-item-text text-muted small" th:text="${auth.email}">email@example.com</span></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" th:href="@{/auth/logout}">🚪 Keluar</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+      <!-- Slot untuk konten -->
+      <div layout:fragment="content" class="container-fluid animate-fade-in">
+        <!-- Konten akan diisi oleh child templates -->
+      </div>
     </div>
+
+    <!-- Footer - Sticky di bawah -->
+    <footer class="py-3 text-center" th:if="${auth != null}">
+      <div class="container">
+        <small class="text-muted">© 2025 Ananta-Resto Menu Management System | Made with ❤️ by ifs24044</small>
+      </div>
+    </footer>
 
     <!-- Bootstrap -->
     <script
@@ -57,9 +253,11 @@
         if (successMessage && successMessage.length > 5) {
           Swal.fire({
             icon: "success",
-            title: "Berhasil Melakukan Tindakan",
+            title: "✅ Berhasil!",
             text: successMessage,
             showConfirmButton: true,
+            confirmButtonColor: "#667eea",
+            timer: 3000
           });
         }
 
@@ -68,9 +266,10 @@
         if (errorMessage && errorMessage.length > 5) {
           Swal.fire({
             icon: "error",
-            title: "Gagal Melakukan Tindakan",
+            title: "❌ Gagal!",
             text: errorMessage,
             showConfirmButton: true,
+            confirmButtonColor: "#dc3545"
           });
         }
       });

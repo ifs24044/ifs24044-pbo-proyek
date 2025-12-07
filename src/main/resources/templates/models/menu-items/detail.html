@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/base}"
+  lang="id"
+>
+  <head>
+    <title>Detail Menu</title>
+    
+    <!-- Custom CSS untuk Detail Page -->
+    <th:block layout:fragment="others-css">
+      <style>
+        .detail-card {
+          background: white;
+          border-radius: 20px;
+          overflow: hidden;
+        }
+        
+        .image-container {
+          position: relative;
+          overflow: hidden;
+          border-radius: 15px;
+          height: 350px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .image-container img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+        }
+        
+        .image-container:hover img {
+          transform: scale(1.1);
+        }
+        
+        .image-placeholder {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          color: white;
+          text-align: center;
+        }
+        
+        .image-placeholder .emoji {
+          font-size: 100px;
+          margin-bottom: 20px;
+          animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        
+        .info-card {
+          background: white;
+          border-radius: 15px;
+          padding: 25px;
+          margin-bottom: 20px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+          border-left: 4px solid #667eea;
+        }
+        
+        .info-card h5 {
+          color: #667eea;
+          font-weight: 600;
+          margin-bottom: 20px;
+        }
+        
+        .info-item {
+          margin-bottom: 15px;
+          padding-bottom: 15px;
+          border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-item:last-child {
+          border-bottom: none;
+          margin-bottom: 0;
+          padding-bottom: 0;
+        }
+        
+        .info-label {
+          font-weight: 600;
+          color: #555;
+          display: block;
+          margin-bottom: 5px;
+        }
+        
+        .info-value {
+          color: #333;
+          font-size: 1.1rem;
+        }
+        
+        .price-tag {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 15px 30px;
+          border-radius: 50px;
+          display: inline-block;
+          font-size: 1.8rem;
+          font-weight: bold;
+          box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .upload-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          border-radius: 50px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          width: 100%;
+          margin-top: 15px;
+        }
+        
+        .upload-btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+          color: white;
+        }
+        
+        .back-btn {
+          background: #6c757d;
+          color: white;
+          border: none;
+          padding: 10px 25px;
+          border-radius: 25px;
+          transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+          background: #5a6268;
+          transform: translateX(-5px);
+        }
+      </style>
+    </th:block>
+  </head>
+  
+  <body>
+    <div layout:fragment="content" class="container mt-4 mb-5">
+      
+      <!-- Header dengan Breadcrumb -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-1">
+            <span style="font-size: 2rem;">📋</span> Detail Menu
+          </h2>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+              <li class="breadcrumb-item active">Detail Menu</li>
+            </ol>
+          </nav>
+        </div>
+        <a th:href="@{/}" class="btn back-btn">
+          ← Kembali
+        </a>
+      </div>
+
+      <!-- Main Content -->
+      <div class="row">
+        <!-- Kolom Gambar -->
+        <div class="col-lg-5 mb-4">
+          <div class="detail-card">
+            <div class="image-container">
+              <!-- Jika ada gambar -->
+              <img th:if="${menuItem.imageUrl != null and menuItem.imageUrl != ''}"
+                   th:src="@{/menu-items/image/{filename}(filename=${menuItem.imageUrl})}" 
+                   th:alt="${menuItem.name}"
+                   onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              
+              <!-- Placeholder jika tidak ada gambar -->
+              <div class="image-placeholder" 
+                   th:style="${menuItem.imageUrl != null and menuItem.imageUrl != '' ? 'display:none;' : 'display:flex;'}">
+                <div>
+                  <div class="emoji">🍽️</div>
+                  <h4>Belum Ada Gambar</h4>
+                  <p class="mb-0">Upload gambar menu Anda</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="p-3">
+              <button class="upload-btn" data-bs-toggle="modal" data-bs-target="#editMenuImageModal">
+                📷 Upload/Ganti Gambar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kolom Detail -->
+        <div class="col-lg-7">
+          <!-- Nama & Status -->
+          <div class="detail-card p-4 mb-3">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="flex-grow-1">
+                <h1 class="mb-3" style="font-weight: 700; color: #333;" th:text="${menuItem.name}">
+                  Nama Menu
+                </h1>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                  <span class="badge bg-info" style="font-size: 1rem; padding: 10px 20px;"
+                        th:text="${menuItem.category != null ? menuItem.category : 'No Category'}">
+                    Category
+                  </span>
+                  <span th:if="${menuItem.isAvailable}" 
+                        class="badge bg-success" style="font-size: 1rem; padding: 10px 20px;">
+                    ✅ Tersedia
+                  </span>
+                  <span th:unless="${menuItem.isAvailable}" 
+                        class="badge bg-danger" style="font-size: 1rem; padding: 10px 20px;">
+                    ❌ Tidak Tersedia
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Harga -->
+            <div class="text-center my-4">
+              <div class="price-tag">
+                <span th:if="${menuItem.price != null}"
+                      th:text="'Rp ' + ${#numbers.formatDecimal(menuItem.price, 0, 'COMMA', 0, 'POINT')}">
+                  Rp 0
+                </span>
+                <span th:unless="${menuItem.price != null}">Rp 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Informasi Detail -->
+          <div class="info-card">
+            <h5>📝 Informasi Menu</h5>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="info-item">
+                  <span class="info-label">⏱️ Waktu Persiapan</span>
+                  <span class="info-value">
+                    <span th:if="${menuItem.preparationTime != null}"
+                          th:text="${menuItem.preparationTime} + ' menit'">0 menit</span>
+                    <span th:unless="${menuItem.preparationTime != null}">-</span>
+                  </span>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="info-item">
+                  <span class="info-label">🔥 Kalori</span>
+                  <span class="info-value">
+                    <span th:if="${menuItem.calories != null}" 
+                          th:text="${menuItem.calories} + ' kcal'">0 kcal</span>
+                    <span th:unless="${menuItem.calories != null}">-</span>
+                  </span>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="info-item">
+                  <span class="info-label">🏷️ Kategori</span>
+                  <span class="info-value" th:text="${menuItem.category != null ? menuItem.category : '-'}">-</span>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="info-item">
+                  <span class="info-label">📊 Status</span>
+                  <span class="info-value">
+                    <span th:if="${menuItem.isAvailable}" class="badge bg-success">Tersedia</span>
+                    <span th:unless="${menuItem.isAvailable}" class="badge bg-danger">Tidak Tersedia</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deskripsi -->
+          <div class="info-card">
+            <h5>📄 Deskripsi</h5>
+            <p class="mb-0" style="line-height: 1.8; color: #555;"
+               th:text="${menuItem.description != null and menuItem.description != '' ? menuItem.description : 'Tidak ada deskripsi'}">
+              Tidak ada deskripsi
+            </p>
+          </div>
+
+          <!-- Timestamp -->
+          <div class="info-card">
+            <h5>🕐 Informasi Waktu</h5>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="info-item">
+                  <span class="info-label">Dibuat Pada</span>
+                  <span class="info-value">
+                    <span th:if="${menuItem.createdAt != null}"
+                          th:text="${#temporals.format(menuItem.createdAt, 'd MMM yyyy, HH:mm')}">-</span>
+                    <span th:unless="${menuItem.createdAt != null}">-</span>
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-item">
+                  <span class="info-label">Terakhir Diubah</span>
+                  <span class="info-value">
+                    <span th:if="${menuItem.updatedAt != null}"
+                          th:text="${#temporals.format(menuItem.updatedAt, 'd MMM yyyy, HH:mm')}">-</span>
+                    <span th:unless="${menuItem.updatedAt != null}">-</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Upload Image -->
+      <div th:replace="~{pages/menu-items/edit-image :: editMenuImageModal}"></div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <th:block layout:fragment="others-js">
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          // Auto-open modal jika ada error upload
+          var editMenuImageModalOpen = "[[${editMenuImageModalOpen}]]" === "true";
+          if (editMenuImageModalOpen) {
+            var editModal = new bootstrap.Modal(document.getElementById("editMenuImageModal"));
+            editModal.show();
+          }
+          
+          // Smooth scroll animation
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      </script>
+    </th:block>
+  </body>
+</html>
