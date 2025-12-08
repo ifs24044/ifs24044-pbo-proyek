@@ -12,10 +12,10 @@
 	</parent>
 
 	<groupId>org.delcom</groupId>
-	<artifactId>spring-todos</artifactId>
+	<artifactId>spring-boot-starter-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Spring Todos</name>
-	<description>Todo Application with Spring Boot</description>
+	<name>Ananta-Resto Menu Management</name>
+	<description>Restaurant Menu Management Application</description>
 
 	<properties>
 		<java.version>25</java.version>

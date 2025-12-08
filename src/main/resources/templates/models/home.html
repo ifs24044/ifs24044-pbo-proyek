@@ -19,22 +19,22 @@
             --blue-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); 
         }
 
-        /* --- HERO BANNER (STYLE: WHITE BACKGROUND + BORDER LINE) --- */
+        /* --- HERO BANNER (PURPLE OVERLAY THEME) --- */
         .hero-banner {
-            background: #ffffff; /* Background Putih */
+            background: 
+                linear-gradient(135deg, rgba(102, 16, 242, 0.9) 0%, rgba(214, 51, 132, 0.85) 100%),
+                url('https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80');
             
-            /* Border Line Ungu */
-            border: 2px solid var(--purple-primary); 
-            
-            color: #333; /* Teks Gelap */
-            
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: none;
+            color: #ffffff;
             padding: 3rem 2.5rem;
             border-radius: 16px;
             position: relative;
             overflow: hidden;
-            
-            /* Shadow sangat tipis */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03); 
+            box-shadow: 0 15px 40px rgba(102, 16, 242, 0.3); 
             margin-bottom: 25px;
         }
 
@@ -138,24 +138,37 @@
         
         <div class="card-body p-4">
             
-          <!-- HERO BANNER (KEMBALI KE STYLE BORDER LINE) -->
+          <!-- HERO BANNER -->
           <div class="hero-banner">
             <div class="d-flex justify-content-between align-items-center position-relative z-1">
                 <div>
-                    <!-- Teks Hitam (text-dark) -->
-                    <h2 class="mb-2 fw-bold display-6 text-dark">
-                        <span id="greetingText">Halo</span>, 
+                    <h2 class="mb-2 fw-bold display-6 text-white" style="text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                        <!-- Perbaikan: Span ini dikosongkan agar tidak muncul "Halo" sama sekali di awal -->
+                        <span id="greetingText"></span>, 
                         <span>[[${auth.name}]]</span>! <span class="wave-emoji">👋</span>
                     </h2>
-                    <!-- Teks Abu-abu (text-muted) -->
-                    <p class="mb-0 text-muted fs-5">
+
+                    <!-- Script Inline: Mengisi teks greeting SEKETIKA saat elemen dibuat -->
+                    <script>
+                        (function() {
+                            const h = new Date().getHours();
+                            let g = "Halo"; // Default fallback
+                            if (h >= 4 && h < 11) g = "Selamat Pagi";
+                            else if (h >= 11 && h < 15) g = "Selamat Siang";
+                            else if (h >= 15 && h < 18) g = "Selamat Sore";
+                            else g = "Selamat Malam";
+                            // Langsung set text sebelum halaman selesai loading
+                            document.getElementById("greetingText").innerText = g;
+                        })();
+                    </script>
+
+                    <p class="mb-0 text-white-60 fs-5" style="text-shadow: 0 1px 2px rgba(0,0,0,0.1);">
                         Kelola menu restoran Anda dengan mudah dan cepat.
                     </p>
                 </div>
                 <div>
-                    <!-- Tombol Outline Merah -->
-                    <a th:href="@{/auth/logout}" class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold">
-                        Keluar
+                    <a th:href="@{/auth/logout}" class="btn btn-light text-primary rounded-pill px-4 py-2 fw-bold shadow-sm border-0">
+                        Keluar <i class="bi bi-box-arrow-right ms-2"></i>
                     </a>
                 </div>
             </div>
@@ -309,18 +322,18 @@
 
     <!-- Scripts -->
     <script layout:fragment="others-js">
-      document.addEventListener("DOMContentLoaded", function() {
-        const hour = new Date().getHours();
-        const greetingElement = document.getElementById("greetingText");
-        if(greetingElement) {
-            let greeting = "Halo";
-            if (hour >= 4 && hour < 11) greeting = "Selamat Pagi";
-            else if (hour >= 11 && hour < 15) greeting = "Selamat Siang";
-            else if (hour >= 15 && hour < 18) greeting = "Selamat Sore";
-            else greeting = "Selamat Malam";
-            greetingElement.innerText = greeting;
-        }
+      // Helper function (ditaruh diluar DOMContentLoaded agar bisa diakses onclick attribute)
+      function prepareDeleteMenu(id, name) {
+        document.getElementById("deleteMenuId").value = id;
+        document.getElementById("deleteMenuName").innerText = name;
+        var deleteModal = new bootstrap.Modal(document.getElementById("deleteMenuModal"));
+        deleteModal.show();
+      }
 
+      document.addEventListener("DOMContentLoaded", function() {
+        // LOGIKA GREETING DIHAPUS DARI SINI (Sudah dipindah ke inline script di atas)
+        
+        // --- Logic Tombol Edit ---
         document.querySelectorAll('.edit-menu-btn').forEach(button => {
           button.addEventListener('click', function() {
             const id = this.dataset.id;
@@ -345,16 +358,8 @@
             editModal.show();
           });
         });
-      });
 
-      function prepareDeleteMenu(id, name) {
-        document.getElementById("deleteMenuId").value = id;
-        document.getElementById("deleteMenuName").innerText = name;
-        var deleteModal = new bootstrap.Modal(document.getElementById("deleteMenuModal"));
-        deleteModal.show();
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
+        // --- Logic Auto Open Modal (Validasi Error) ---
         var addMenuModalOpen = "[[${addMenuModalOpen}]]" === "true";
         if (addMenuModalOpen) {
           var addModal = new bootstrap.Modal(document.getElementById("addMenuModal"));
