@@ -13,72 +13,217 @@
     <!-- Custom CSS -->
     <th:block layout:fragment="others-css">
       <style>
-        /* Styling Kartu Statistik */
+        /* Background Gradient */
+        body {
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          min-height: 100vh;
+        }
+
+        /* Styling Kartu Statistik - IMPROVED */
         .stat-card {
-          background: white;
-          border-radius: 15px;
-          padding: 25px;
-          box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+          background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+          border-radius: 20px;
+          padding: 30px 25px;
+          box-shadow: 0 8px 25px rgba(0,0,0,0.1);
           text-align: center;
-          transition: transform 0.3s ease;
+          transition: all 0.3s ease;
+          border: none;
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Shimmer effect on hover */
+        .stat-card::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(
+            45deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+          );
+          transform: rotate(45deg);
+          transition: all 0.6s;
+          opacity: 0;
+        }
+        
+        .stat-card:hover::before {
+          left: 100%;
+          opacity: 1;
         }
         
         .stat-card:hover {
-          transform: translateY(-5px);
+          transform: translateY(-10px);
+          box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card .icon-wrapper {
+          width: 70px;
+          height: 70px;
+          margin: 0 auto 20px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          position: relative;
+          z-index: 1;
+        }
+
+        .stat-card.card-purple .icon-wrapper {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card.card-green .icon-wrapper {
+          background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+          box-shadow: 0 5px 15px rgba(86, 171, 47, 0.3);
+        }
+
+        .stat-card.card-orange .icon-wrapper {
+          background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+          box-shadow: 0 5px 15px rgba(242, 153, 74, 0.3);
+        }
+
+        .stat-card.card-blue .icon-wrapper {
+          background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+          box-shadow: 0 5px 15px rgba(33, 147, 176, 0.3);
         }
         
         .stat-card h6 {
-          color: #666;
+          color: #6c757d;
           font-weight: 600;
+          font-size: 0.95rem;
           margin-bottom: 15px;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
         }
         
         .stat-card h2 {
-          color: #333;
-          font-weight: 700;
-          font-size: 2.5rem;
+          color: #2d3748;
+          font-weight: 800;
+          font-size: 2.8rem;
           margin: 0;
+          position: relative;
+          z-index: 1;
         }
         
-        /* Styling Kartu Grafik */
+        /* Styling Kartu Grafik - IMPROVED */
         .chart-card {
           background: white;
-          border-radius: 15px;
-          padding: 25px;
-          box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-          margin-bottom: 25px;
+          border-radius: 25px;
+          padding: 35px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          margin-bottom: 30px;
+          transition: all 0.3s ease;
+          border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .chart-card:hover {
+          box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+          transform: translateY(-5px);
         }
         
         .chart-card .card-header {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          font-weight: 600;
-          border-radius: 10px;
-          padding: 15px 20px;
-          margin-bottom: 20px;
+          font-weight: 700;
+          border-radius: 15px;
+          padding: 18px 25px;
+          margin-bottom: 25px;
+          box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+          display: flex;
+          align-items: center;
+          gap: 12px;
         }
 
-        /* --- BUTTON GRADIENT UNGU (BARU) --- */
+        .chart-card .card-header h5 {
+          margin: 0;
+          font-size: 1.15rem;
+          letter-spacing: 0.3px;
+        }
+
+        /* Header Section */
+        .page-header {
+          background: white;
+          border-radius: 20px;
+          padding: 30px;
+          margin-bottom: 30px;
+          box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .page-header h2 {
+          color: #2d3748;
+          font-weight: 800;
+          margin-bottom: 8px;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .page-header p {
+          color: #718096;
+          font-size: 1.05rem;
+          margin: 0;
+        }
+
+        /* Button Gradient Ungu - IMPROVED */
         .btn-back-gradient {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white !important; /* Force text white */
+          color: white !important;
           border: none;
-          border-radius: 25px;
-          padding: 10px 25px;
-          font-weight: 600;
-          box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+          border-radius: 30px;
+          padding: 12px 30px;
+          font-weight: 700;
+          box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
           transition: all 0.3s ease;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
+          font-size: 1rem;
+          letter-spacing: 0.5px;
         }
 
         .btn-back-gradient:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
-          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); /* Reverse gradient on hover */
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+          background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         }
+
+        .btn-back-gradient:active {
+          transform: translateY(-1px);
+        }
+
+        /* Responsive Canvas */
+        canvas {
+          max-height: 350px !important;
+        }
+
+        /* Loading Animation */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .stat-card, .chart-card {
+          animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
       </style>
     </th:block>
   </head>
@@ -87,42 +232,45 @@
     <div layout:fragment="content" class="container mt-4 mb-5">
       
       <!-- Header -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="page-header d-flex justify-content-between align-items-center">
         <div>
-          <h2 class="mb-1">
-            <span style="font-size: 2rem;">📊</span> Statistik Menu Restoran
+          <h2>
+            📊 Statistik Menu Restoran
           </h2>
-          <p class="text-muted mb-0">Visualisasi data menu dan analisis penjualan</p>
+          <p>Visualisasi data menu dan analisis penjualan</p>
         </div>
         
-        <!-- BUTTON KEMBALI YANG DIUBAH -->
         <a th:href="@{/}" class="btn btn-back-gradient">
-          <span>←</span> Kembali
+          ← Kembali
         </a>
       </div>
 
       <!-- Summary Cards -->
       <div class="row mb-4">
         <div class="col-md-3 mb-3">
-          <div class="stat-card" style="border-left: 4px solid #667eea;">
+          <div class="stat-card card-purple">
+            <div class="icon-wrapper">📋</div>
             <h6>Total Menu</h6>
             <h2 th:text="${totalMenus}">0</h2>
           </div>
         </div>
         <div class="col-md-3 mb-3">
-          <div class="stat-card" style="border-left: 4px solid #28a745;">
+          <div class="stat-card card-green">
+            <div class="icon-wrapper">✅</div>
             <h6>Menu Tersedia</h6>
             <h2 th:text="${availableMenus}">0</h2>
           </div>
         </div>
         <div class="col-md-3 mb-3">
-          <div class="stat-card" style="border-left: 4px solid #ffc107;">
+          <div class="stat-card card-orange">
+            <div class="icon-wrapper">💰</div>
             <h6>Rata-rata Harga</h6>
             <h2 th:text="'Rp ' + ${#numbers.formatDecimal(averagePrice, 0, 'COMMA', 0, 'POINT')}">Rp 0</h2>
           </div>
         </div>
         <div class="col-md-3 mb-3">
-          <div class="stat-card" style="border-left: 4px solid #17a2b8;">
+          <div class="stat-card card-blue">
+            <div class="icon-wrapper">🏷️</div>
             <h6>Total Kategori</h6>
             <h2 th:text="${totalCategories}">0</h2>
           </div>
@@ -133,21 +281,27 @@
       <div class="row">
         <!-- Chart 1: Pie Chart - Jumlah Menu per Kategori -->
         <div class="col-lg-6 mb-4">
-          <div class="chart-card">
+          <div class="chart-card" style="height: 100%;">
             <div class="card-header">
-              <h5 class="mb-0">📈 Jumlah Menu per Kategori</h5>
+              <span>📈</span>
+              <h5>Jumlah Menu per Kategori</h5>
             </div>
-            <canvas id="categoryCountChart"></canvas>
+            <div style="height: 350px; display: flex; align-items: center; justify-content: center;">
+              <canvas id="categoryCountChart"></canvas>
+            </div>
           </div>
         </div>
 
         <!-- Chart 2: Bar Chart - Rata-rata Harga per Kategori -->
         <div class="col-lg-6 mb-4">
-          <div class="chart-card">
+          <div class="chart-card" style="height: 100%;">
             <div class="card-header">
-              <h5 class="mb-0">💰 Rata-rata Harga per Kategori</h5>
+              <span>💵</span>
+              <h5>Rata-rata Harga per Kategori</h5>
             </div>
-            <canvas id="averagePriceChart"></canvas>
+            <div style="height: 350px;">
+              <canvas id="averagePriceChart"></canvas>
+            </div>
           </div>
         </div>
 
@@ -155,7 +309,8 @@
         <div class="col-lg-12 mb-4">
           <div class="chart-card">
             <div class="card-header">
-              <h5 class="mb-0">💵 Total Nilai Menu per Kategori</h5>
+              <span>💎</span>
+              <h5>Total Nilai Menu per Kategori</h5>
             </div>
             <canvas id="totalPriceChart"></canvas>
           </div>
@@ -177,29 +332,33 @@
           const averagePriceData = /*[[${averagePriceData}]]*/ [];
           const totalPriceData = /*[[${totalPriceData}]]*/ [];
 
-          // Debug - cek data di console
           console.log("=== CHART DATA DEBUG ===");
           console.log("categoryCountData:", categoryCountData);
           console.log("averagePriceData:", averagePriceData);
           console.log("totalPriceData:", totalPriceData);
 
-          // Warna untuk chart
+          // Warna Modern dengan Gradien
           const chartColors = {
-            'Appetizer': 'rgba(255, 99, 132, 0.8)',
-            'Main Course': 'rgba(54, 162, 235, 0.8)',
-            'Dessert': 'rgba(255, 206, 86, 0.8)',
-            'Beverage': 'rgba(75, 192, 192, 0.8)'
+            'Appetizer': 'rgba(239, 68, 68, 0.8)',      // Red
+            'Main Course': 'rgba(59, 130, 246, 0.8)',   // Blue
+            'Dessert': 'rgba(251, 191, 36, 0.8)',       // Yellow
+            'Beverage': 'rgba(16, 185, 129, 0.8)'       // Green
           };
 
           const borderColors = {
-            'Appetizer': 'rgba(255, 99, 132, 1)',
-            'Main Course': 'rgba(54, 162, 235, 1)',
-            'Dessert': 'rgba(255, 206, 86, 1)',
-            'Beverage': 'rgba(75, 192, 192, 1)'
+            'Appetizer': 'rgba(239, 68, 68, 1)',
+            'Main Course': 'rgba(59, 130, 246, 1)',
+            'Dessert': 'rgba(251, 191, 36, 1)',
+            'Beverage': 'rgba(16, 185, 129, 1)'
           };
 
+          // Global Chart Configuration
+          Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
+          Chart.defaults.font.size = 13;
+          Chart.defaults.color = '#4a5568';
+
           // ============================================
-          // Chart 1: Pie Chart - Jumlah Menu per Kategori
+          // Chart 1: Pie Chart PENUH (tanpa lubang di tengah)
           // ============================================
           const categoryCountCtx = document.getElementById('categoryCountChart');
           if (categoryCountCtx && categoryCountData.length > 0) {
@@ -210,9 +369,10 @@
                 datasets: [{
                   label: 'Jumlah Menu',
                   data: categoryCountData.map(item => item.count),
-                  backgroundColor: categoryCountData.map(item => chartColors[item.category] || 'rgba(128, 128, 128, 0.8)'),
-                  borderColor: categoryCountData.map(item => borderColors[item.category] || 'rgba(128, 128, 128, 1)'),
-                  borderWidth: 2
+                  backgroundColor: categoryCountData.map(item => chartColors[item.category] || 'rgba(156, 163, 175, 0.8)'),
+                  borderColor: '#ffffff',
+                  borderWidth: 3,
+                  hoverOffset: 15
                 }]
               },
               options: {
@@ -222,16 +382,31 @@
                   legend: {
                     position: 'bottom',
                     labels: {
-                      padding: 15,
+                      padding: 20,
                       font: {
-                        size: 12
-                      }
+                        size: 13,
+                        weight: '600'
+                      },
+                      usePointStyle: true,
+                      pointStyle: 'circle'
                     }
                   },
                   tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
+                    titleFont: {
+                      size: 14,
+                      weight: 'bold'
+                    },
+                    bodyFont: {
+                      size: 13
+                    },
                     callbacks: {
                       label: function(context) {
-                        return context.label + ': ' + context.parsed + ' menu';
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                        return context.label + ': ' + context.parsed + ' menu (' + percentage + '%)';
                       }
                     }
                   }
@@ -239,17 +414,28 @@
               }
             });
           } else {
-            console.warn("Chart 1: No data atau canvas tidak ditemukan");
+            console.warn("Chart 1: No data");
             if (categoryCountCtx) {
               categoryCountCtx.parentElement.innerHTML = '<p class="text-center text-muted py-5">Tidak ada data untuk ditampilkan</p>';
             }
           }
 
           // ============================================
-          // Chart 2: Bar Chart - Rata-rata Harga per Kategori
+          // Chart 2: Bar Chart dengan Gradient
           // ============================================
           const averagePriceCtx = document.getElementById('averagePriceChart');
           if (averagePriceCtx && averagePriceData.length > 0) {
+            const ctx = averagePriceCtx.getContext('2d');
+            
+            // Create gradients for each bar
+            const gradients = averagePriceData.map((item, index) => {
+              const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+              const color = chartColors[item.category] || 'rgba(156, 163, 175, 0.8)';
+              gradient.addColorStop(0, color);
+              gradient.addColorStop(1, color.replace('0.8', '0.3'));
+              return gradient;
+            });
+
             new Chart(averagePriceCtx, {
               type: 'bar',
               data: {
@@ -257,9 +443,11 @@
                 datasets: [{
                   label: 'Rata-rata Harga (Rp)',
                   data: averagePriceData.map(item => item.averagePrice),
-                  backgroundColor: averagePriceData.map(item => chartColors[item.category] || 'rgba(128, 128, 128, 0.8)'),
-                  borderColor: averagePriceData.map(item => borderColors[item.category] || 'rgba(128, 128, 128, 1)'),
-                  borderWidth: 2
+                  backgroundColor: gradients,
+                  borderColor: averagePriceData.map(item => borderColors[item.category] || 'rgba(156, 163, 175, 1)'),
+                  borderWidth: 2,
+                  borderRadius: 10,
+                  borderSkipped: false
                 }]
               },
               options: {
@@ -268,10 +456,23 @@
                 scales: {
                   y: {
                     beginAtZero: true,
+                    grid: {
+                      color: 'rgba(0, 0, 0, 0.05)',
+                      drawBorder: false
+                    },
                     ticks: {
+                      padding: 10,
                       callback: function(value) {
                         return 'Rp ' + value.toLocaleString('id-ID');
                       }
+                    }
+                  },
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      padding: 10
                     }
                   }
                 },
@@ -280,6 +481,9 @@
                     display: false
                   },
                   tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
                     callbacks: {
                       label: function(context) {
                         return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
@@ -290,17 +494,27 @@
               }
             });
           } else {
-            console.warn("Chart 2: No data atau canvas tidak ditemukan");
+            console.warn("Chart 2: No data");
             if (averagePriceCtx) {
               averagePriceCtx.parentElement.innerHTML = '<p class="text-center text-muted py-5">Tidak ada data untuk ditampilkan</p>';
             }
           }
 
           // ============================================
-          // Chart 3: Horizontal Bar - Total Nilai Menu
+          // Chart 3: Horizontal Bar dengan Gradient
           // ============================================
           const totalPriceCtx = document.getElementById('totalPriceChart');
           if (totalPriceCtx && totalPriceData.length > 0) {
+            const ctx = totalPriceCtx.getContext('2d');
+            
+            const gradients = totalPriceData.map((item, index) => {
+              const gradient = ctx.createLinearGradient(0, 0, 600, 0);
+              const color = chartColors[item.category] || 'rgba(156, 163, 175, 0.8)';
+              gradient.addColorStop(0, color);
+              gradient.addColorStop(1, color.replace('0.8', '0.3'));
+              return gradient;
+            });
+
             new Chart(totalPriceCtx, {
               type: 'bar',
               data: {
@@ -308,9 +522,11 @@
                 datasets: [{
                   label: 'Total Nilai (Rp)',
                   data: totalPriceData.map(item => item.totalPrice),
-                  backgroundColor: totalPriceData.map(item => chartColors[item.category] || 'rgba(128, 128, 128, 0.8)'),
-                  borderColor: totalPriceData.map(item => borderColors[item.category] || 'rgba(128, 128, 128, 1)'),
-                  borderWidth: 2
+                  backgroundColor: gradients,
+                  borderColor: totalPriceData.map(item => borderColors[item.category] || 'rgba(156, 163, 175, 1)'),
+                  borderWidth: 2,
+                  borderRadius: 10,
+                  borderSkipped: false
                 }]
               },
               options: {
@@ -320,10 +536,23 @@
                 scales: {
                   x: {
                     beginAtZero: true,
+                    grid: {
+                      color: 'rgba(0, 0, 0, 0.05)',
+                      drawBorder: false
+                    },
                     ticks: {
+                      padding: 10,
                       callback: function(value) {
                         return 'Rp ' + value.toLocaleString('id-ID');
                       }
+                    }
+                  },
+                  y: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      padding: 10
                     }
                   }
                 },
@@ -332,6 +561,9 @@
                     display: false
                   },
                   tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
                     callbacks: {
                       label: function(context) {
                         return 'Rp ' + context.parsed.x.toLocaleString('id-ID');
@@ -342,7 +574,7 @@
               }
             });
           } else {
-            console.warn("Chart 3: No data atau canvas tidak ditemukan");
+            console.warn("Chart 3: No data");
             if (totalPriceCtx) {
               totalPriceCtx.parentElement.innerHTML = '<p class="text-center text-muted py-5">Tidak ada data untuk ditampilkan</p>';
             }
