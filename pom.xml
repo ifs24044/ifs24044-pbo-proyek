@@ -243,6 +243,7 @@
 						<!-- Exclude specific classes -->
 						<exclude>**/utils/**</exclude>
 						<exclude>**/views/**</exclude>
+						<exclude>**/configs/**</exclude>
 					</excludes>
 
 					<rules>
